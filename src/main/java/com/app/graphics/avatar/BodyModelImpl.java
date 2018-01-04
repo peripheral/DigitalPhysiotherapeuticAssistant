@@ -295,35 +295,35 @@ public class BodyModelImpl implements IBodyModel{
 
 		@Override
 		public double getA1Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.SHOULDER_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.HEAD.name()));
 		}
 
 		@Override
 		public double getA2Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.HEAD.name())
 					,p.getJointMap().get(JOINT_TAG.SHOULDER_RIGHT.name()));			
 		}
 
 		@Override
 		public double getA3Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.HEAD.name())
 					,p.getJointMap().get(JOINT_TAG.SPINE_BASE.name()));	
 		}
 
 		@Override
 		public double getA4Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.SPINE_BASE.name())
 					,p.getJointMap().get(JOINT_TAG.SHOULDER_LEFT.name()));	
 		}
 
 		@Override
 		public double getA5Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.SPINE_BASE.name())
 					,p.getJointMap().get(JOINT_TAG.SHOULDER_LEFT.name()));	
 		}
@@ -337,7 +337,7 @@ public class BodyModelImpl implements IBodyModel{
 			double[] vector3 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.SHOULDER_LEFT.name()));
 			double[] normal = MathUtils.getNormal(vector1,vector2);
-			return MathUtils.getAngleV(normal,vector3);	
+			return MathUtils.getAngleBetweenVectors(normal,vector3);	
 		}
 
 
@@ -351,12 +351,12 @@ public class BodyModelImpl implements IBodyModel{
 			double[] vector3 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.SHOULDER_RIGHT.name()));
 			double[] normal = MathUtils.getNormal(vector,vector2);
-			return MathUtils.getAngleV(normal,vector3);	
+			return MathUtils.getAngleBetweenVectors(normal,vector3);	
 		}
 
 		@Override
 		public double getA8Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.SPINE_BASE.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.SPINE_BASE.name())
 					,p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name()));
 		}
@@ -370,19 +370,19 @@ public class BodyModelImpl implements IBodyModel{
 			double[] vector3 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.SPINE_BASE.name())
 					,p.getJointMap().get(JOINT_TAG.SPINE_SHOULDER.name()));
 			double[] normal = MathUtils.getNormal(vector,vector2);
-			return MathUtils.getAngleV(normal,vector3);	
+			return MathUtils.getAngleBetweenVectors(normal,vector3);	
 		}
 
 		@Override
 		public double getA10Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_RIGHT.name()));
 		}
 
 		@Override
 		public double getA11Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.HIP_LEFT.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.HIP_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_LEFT.name()));
 		}
@@ -396,7 +396,7 @@ public class BodyModelImpl implements IBodyModel{
 			double[] vector3 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.HIP_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_LEFT.name()));
 			double[] normal = MathUtils.getNormal(vector,vector2);
-			return MathUtils.getAngleV(normal,vector3);	
+			return MathUtils.getAngleBetweenVectors(normal,vector3);	
 		}
 
 		@Override
@@ -408,33 +408,33 @@ public class BodyModelImpl implements IBodyModel{
 			double[] vector3 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_RIGHT.name()));
 			double[] normal = MathUtils.getNormal(vector,vector2);
-			return MathUtils.getAngleV(normal,vector3);	
+			return MathUtils.getAngleBetweenVectors(normal,vector3);	
 		}
 
 		@Override
 		public double getA14Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.KNEE_RIGHT.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.KNEE_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_LEFT.name()));
 		}
 
 		@Override
 		public double getA15Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.KNEE_LEFT.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.KNEE_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.ANKLE_LEFT.name()));
 		}
 
 		@Override
 		public double getA16Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.ANKLE_LEFT.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.ANKLE_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_LEFT.name())
 					,p.getJointMap().get(JOINT_TAG.FOOT_LEFT.name()));
 		}
 
 		@Override
 		public double getA17Angle(Posture p) {
-			return MathUtils.getAngle(p.getJointMap().get(JOINT_TAG.ANKLE_RIGHT.name())
+			return MathUtils.getAngleFromPoints(p.getJointMap().get(JOINT_TAG.ANKLE_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.KNEE_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.FOOT_RIGHT.name()));
 		}
@@ -445,7 +445,7 @@ public class BodyModelImpl implements IBodyModel{
 					,p.getJointMap().get(JOINT_TAG.ANKLE_RIGHT.name()));
 			double[] vector2 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_LEFT.name()));
-			return MathUtils.getAngleV(vector1,vector2);
+			return MathUtils.getAngleBetweenVectors(vector1,vector2);
 		}
 
 		@Override
@@ -454,7 +454,7 @@ public class BodyModelImpl implements IBodyModel{
 					,p.getJointMap().get(JOINT_TAG.ANKLE_LEFT.name()));
 			double[] vector2 = MathUtils.getVector(p.getJointMap().get(JOINT_TAG.HIP_RIGHT.name())
 					,p.getJointMap().get(JOINT_TAG.HIP_LEFT.name()));
-			return MathUtils.getAngleV(vector1,vector2);
+			return MathUtils.getAngleBetweenVectors(vector1,vector2);
 		}
 
 		@Override

@@ -3,6 +3,9 @@ package com.app.graphics;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +18,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.app.entities.Posture;
 import com.app.graphics.avatar.BodyModelImpl;
 import com.app.graphics.avatar.BodyModelImpl.JOINT_TAG;
+import com.app.utility.MathUtils;
 
 
 public class PostureRenderer{
@@ -23,9 +27,9 @@ public class PostureRenderer{
 	/* Conversion to screen pixel ratio */
 	private double ratio = 0.3;
 	/*Joint is presented as square of pixel size */
-	public final int SQUARE_HEIGHT = 40;
+	public final int SQUARE_HEIGHT = 30;
 	/* Square radius as constant */
-	public final int SQUARE_RADIUS = 5;
+	public final int SQUARE_RADIUS = 3;
 
 	/**
 	 * Selected joint, initial is head
@@ -39,12 +43,12 @@ public class PostureRenderer{
 			shoulder_center_color_idx = 3,
 			shoulder_left_color_idx = 6,
 			shoulder_right_color_idx = 9,
-			spine_color_idx = 12,
+			spine_base_color_idx = 12,
 			elbow_left_color_idx= 15,
 			elbow_right_color_idx= 18,
 			wrist_left_color_idx = 21,
 			wrist_right_color_idx = 24,
-			hip_center_color_idx = 27,
+			spine_mid_color_idx = 27,
 			hip_left_color_idx = 30,
 			hip_right_color_idx = 33,
 			knee_left_color_idx = 36,
@@ -54,7 +58,8 @@ public class PostureRenderer{
 			foot_left_color_idx = 48,
 			foot_right_color_idx = 51,
 			hand_left_color_idx = 54,
-			hand_right_color_idx = 57;
+			hand_right_color_idx = 57,
+			neck_color_idx = 60;
 	private double[] collorArray = {0,1,0, //Head square color idx = 0
 			0,0,1, //Shoulder center square color idx = 3
 			0,0,1, //Shoulder left square color idx = 6
@@ -74,10 +79,11 @@ public class PostureRenderer{
 			0,0,1, //Foot left square color idx = 48
 			0,0,1, //Foot right square color idx = 51
 			0,0,1,  //Hand left square color idx = 54
-			0,0,1};	//Hand right square color idx = 57
+			0,0,1,//Hand right square color idx = 57
+			0,0,1};	//Neck square color idx = 57
 	private double offsetX = 0;
 	private double offsetY = 200;
-	private double offsetZ= -100;
+	private double offsetZ = 0;
 
 
 
@@ -130,7 +136,26 @@ public class PostureRenderer{
 		}
 		glut.glutWireCube(SQUARE_HEIGHT);
 		gl.glPopMatrix();
+
+
+		/*Drawing neck square */
 		gl.glPushMatrix();
+		double[] neck = posture.getNeck();
+		gl.glTranslated(neck[0],neck[1], neck[2]);
+		gl.glColor3dv(collorArray,neck_color_idx);
+		if(selectedJoint.equals(BodyModelImpl.JOINT_TAG.NECK.name())&& render){
+			glut.glutSolidCube(SQUARE_HEIGHT);
+		}
+		glut.glutWireCube(SQUARE_HEIGHT);
+		gl.glPopMatrix();
+		gl.glPushMatrix();
+		/*Drawing line between head and neck center */
+		//g.drawLine(head[0], head[1],sc[0],sc[1]);
+		gl.glBegin(GL2.GL_LINES);
+		gl.glVertex3dv(head, 0);
+		gl.glVertex3dv(neck, 0);
+		gl.glEnd();
+
 		double sc[] = posture.getShoulder_center();
 		/* Drawing shoulder center square */
 		//g.fillRect(sc[0]-SQUARE_RADIUS, sc[1]-SQUARE_RADIUS,SQUARE_HEIGHT,SQUARE_HEIGHT);
@@ -141,7 +166,7 @@ public class PostureRenderer{
 		/*Drawing line between head and shoulder center */
 		//g.drawLine(head[0], head[1],sc[0],sc[1]);
 		gl.glBegin(GL2.GL_LINES);
-		gl.glVertex3dv(head, 0);
+		gl.glVertex3dv(neck, 0);
 		gl.glVertex3dv(sc, 0);
 		gl.glEnd();
 
@@ -178,41 +203,41 @@ public class PostureRenderer{
 		gl.glVertex3dv(sr, 0);
 		gl.glEnd();
 
-		/* Drawing spine square */
+
+		/* Drawing spine mid square */
 		//g.setColor(Color.ORANGE);
-		double s[] = posture.getSpineBase();
+		double sm[] = posture.getSpineMid();
 		gl.glPushMatrix();
-		gl.glTranslated(s[0], s[1], s[2]);
-		gl.glColor3dv(collorArray, spine_color_idx);
-		if(selectedJoint.equals(BodyModelImpl.JOINT_TAG.SPINE_BASE.name())&& render){
+		gl.glTranslated(sm[0], sm[1], sm[2]);
+		gl.glColor3dv(collorArray, spine_mid_color_idx);
+		if(selectedJoint.equals(BodyModelImpl.JOINT_TAG.SPINE_MID.name())&& render){
 			glut.glutSolidCube(SQUARE_HEIGHT);
 		}
 		glut.glutWireCube(SQUARE_HEIGHT);
 		gl.glPopMatrix();
-		//g.fillRect(s[0]-SQUARE_RADIUS, s[1]-SQUARE_RADIUS,SQUARE_HEIGHT,SQUARE_HEIGHT);
-		/*Drawing line between shoulder center and spine */
-		//g.drawLine(sc[0], sc[1],s[0],s[1]);
+
 		gl.glBegin(GL2.GL_LINES);
 		gl.glVertex3dv(sc, 0);
-		gl.glVertex3dv(s, 0);
+		gl.glVertex3dv(sm, 0);
 		gl.glEnd();
-		
-		/* Drawing hip center square */
+
+		/* Drawing spine base square */
 		//g.setColor(Color.ORANGE);
-		double hc[] = posture.getHip_center();
+		double sb[] = posture.getSpineBase();
 		gl.glPushMatrix();
-		gl.glTranslated(hc[0], hc[1], hc[2]);
-		gl.glColor3dv(collorArray, hip_center_color_idx);
+		gl.glTranslated(sb[0], sb[1], sb[2]);
+		gl.glColor3dv(collorArray, spine_base_color_idx);
 		if(selectedJoint.equals(BodyModelImpl.JOINT_TAG.SPINE_BASE.name())&& render){
 			glut.glutSolidCube(SQUARE_HEIGHT);
 		}
 		glut.glutWireCube(SQUARE_HEIGHT);
 		gl.glPopMatrix();
-		
+
 		gl.glBegin(GL2.GL_LINES);
-		gl.glVertex3dv(s, 0);
-		gl.glVertex3dv(hc, 0);
+		gl.glVertex3dv(sm, 0);
+		gl.glVertex3dv(sb, 0);
 		gl.glEnd();
+
 		/* Drawing left hip square */
 		//g.setColor(Color.ORANGE);
 		double hl[] = posture.getHip_left();
@@ -229,7 +254,7 @@ public class PostureRenderer{
 		/*Drawing line between spine and left heap */
 		//g.drawLine(s[0], s[1],hl[0],hl[1]);
 		gl.glBegin(GL2.GL_LINES);
-		gl.glVertex3dv(hc, 0);
+		gl.glVertex3dv(sb, 0);
 		gl.glVertex3dv(hl, 0);
 		gl.glEnd();
 		/* Drawing right hip square */
@@ -247,7 +272,7 @@ public class PostureRenderer{
 		/*Drawing line between spine and right heap */
 		//g.drawLine(s[0], s[1],hr[0],hr[1]);
 		gl.glBegin(GL2.GL_LINES);
-		gl.glVertex3dv(hc, 0);
+		gl.glVertex3dv(sb, 0);
 		gl.glVertex3dv(hr, 0);
 		gl.glEnd();
 		/* Drawing the left knee */
@@ -436,7 +461,7 @@ public class PostureRenderer{
 		gl.glVertex3dv(wl, 0);
 		gl.glEnd();
 	}
-	
+
 	public void selectJoint(int x, int y) {
 		Map<String,double[]> jointMap = posture.getJointMap();
 		Set<String> keys = posture.getJointMap().keySet();
@@ -478,6 +503,120 @@ public class PostureRenderer{
 			}
 		}	
 		return selectedJoint;
+	}
+
+	/**
+	 * Selects joint from mouse click
+	 * @param k 
+	 * @param j 
+	 * @param referencePoint 
+	 * @param fovy 
+	 * @param aspect 
+	 * @param height 
+	 * @param width 
+	 * @param fs 
+	 * @return
+	 */
+	public String selectJointWithMouse(int x, int y, float[] eye, float fovy, 
+			float[] referencePoint, float aspect, int height, int width) {
+		int clickRadius = (int) (15*700.0/height/2);
+		System.out.println("Click box:"+clickRadius);
+		System.out.println("X:"+x+" Y:"+y+" height:"+height);
+		Map<String, double[]> joints = posture.getJointMap();	
+		Set<String> keys = joints.keySet();
+		int[] position;
+		double[] joint = new double[3];
+
+		for(String key :keys){
+			joint= Arrays.copyOf(joints.get(key),joint.length);
+			joint[0] = joint[0]+offsetX;
+			joint[1] = joint[1]+offsetY;
+			joint[2] = joint[2]+offsetZ;
+			
+			position = project(eye,referencePoint,fovy,joint,aspect,height,width);
+			if(key.contains("HEAD")||key.contains("FOOT")||key.contains("WRIST")) {
+				System.out.println("Joint name:"+key+" x:"+x+" y:"+y + " pos:"+Arrays.toString(position));
+			}
+			if(isWithinBoundary(x,y,position[0],position[1],clickRadius)) {
+				selectedJoint = key;
+			}
+		}	
+		return selectedJoint;
+	}
+
+	private boolean isWithinBoundary(int x, int y, int jointX, int jointY, int boxWidth) {
+		if(jointX - boxWidth < x && jointX + boxWidth > x ) {
+			if(jointY - boxWidth < y && jointY + boxWidth > y) {
+				return true;
+
+			}
+		}
+		return false;
+	}
+
+	private int[] project(float[] eye, float[] referencePoint, float fovy,
+			double[] joint, float aspect, int height, int width) {
+		int[] loc = {0,0};
+		int portHeight = (int) (height * 0.93f);
+		//	System.out.println("Eye:"+Arrays.toString(eye));
+		//System.out.println("Referencepoint:"+Arrays.toString(referencePoint));
+		//Calculate normal to the clipping plane
+		float[] normalER = {referencePoint[0]-eye[0],referencePoint[1]-eye[1],
+				referencePoint[2]-eye[2]};
+		//	System.out.println("Normal:"+Arrays.toString(normal));
+
+		//Vector from joint to eye
+		float[] vectorJE = {eye[0]-(float)joint[0],eye[1]-(float)joint[1],eye[2]-(float)joint[2]};
+		//Y vector
+		float[] vecY = {0,1,0};
+
+		//Get vector X clipping win
+		float[] vecXClipUnit = MathUtils.getCrossProduct(normalER,vecY);
+		vecXClipUnit = MathUtils.divideVectorWithConstant(vecXClipUnit, MathUtils.getVectorAbsolute(vecXClipUnit));
+		//Get vector Y clipping win
+		float[] vecYClipUnit = MathUtils.getCrossProduct(vecXClipUnit,normalER);
+		vecYClipUnit = MathUtils.divideVectorWithConstant(vecYClipUnit, MathUtils.getVectorAbsolute(vecYClipUnit));
+
+		//Project vectorJA on the normal
+		float[] projecOnNorm = MathUtils.projectVectorOnVector(vectorJE,normalER);
+
+		//	System.out.println("Project on norm:"+MathUtils.getVectorAbsolute(projecOnNorm)+" Normal abs:"+MathUtils.getVectorAbsolute(normal));
+		//Calculate projection on clipping plane
+		float[] projecOnPlane = MathUtils.subtract(vectorJE,projecOnNorm);
+
+		//	System.out.println("Project On Plane:"+Arrays.toString(projecOnPlane)+" Abs:"+MathUtils.getVectorAbsolute(projecOnPlane));
+		//Project on X vector of clipping plane
+		float[] projectionX = MathUtils.projectVectorOnVector(projecOnPlane,vecXClipUnit);
+		//		System.out.println("Project On xVector:"+Arrays.toString(projectionX)+" Abs:"+MathUtils.getVectorAbsolute(projectionX));
+		//Project on Y vector of clipping plane
+		float[] projectionY = MathUtils.projectVectorOnVector(projecOnPlane,vecYClipUnit);
+		//		System.out.println("Project On yVector:"+Arrays.toString(projectionX)+" Abs:"+MathUtils.getVectorAbsolute(projectionY));
+		float factorPerspective = MathUtils.getVectorAbsolute(projecOnNorm);	
+
+
+		//	System.out.println("Port Height:"+portHeight);
+		float portWidth = height*aspect*portHeight/700;
+		//	System.out.println("Port Height:"+portHeight + " Port Width:"+portWidth+" Aspect:"+aspect);
+		float scalarX = Math.signum(MathUtils.getScalarProd(projectionX, vecXClipUnit));
+		float scalarY = Math.signum(MathUtils.getScalarProd(projectionY, vecYClipUnit));
+		float xAbsolut = MathUtils.getVectorAbsolute(projectionX)/factorPerspective*scalarX;
+		float yAbsolut = MathUtils.getVectorAbsolute(projectionY)/factorPerspective*scalarY;
+		//		System.out.println("MaxWidth att abs(projectOnNorm):"+maxWidth+" projectY:"+MathUtils.getVectorAbsolute(projectionY));
+		//		System.out.println("Projection on X absolute:"+ xAbsolut);
+		//		System.out.println("Projection on Y absolute:"+ yAbsolut);
+		//		System.out.println("Height:"+height);
+		float xLoc = -xAbsolut;
+		float yLoc = yAbsolut;
+				System.out.println("xLoc:"+xLoc+" yLoc:"+yLoc);
+		float Vc = height/2 + (portHeight*yLoc);
+		//		System.out.println("ASpect:"+aspect);
+
+		float Hc = width/2  + (portWidth*xLoc*1.2f);
+		//	System.out.println("Width:"+width+" Port width:"+portWidth);
+		
+		//		System.out.println("Vc:"+Vc+" Hc:"+Hc);
+		loc[0] = (int) Hc;loc[1] = (int) Vc;
+		return loc;
 	}
 
 	/**
@@ -523,5 +662,25 @@ public class PostureRenderer{
 
 	public String getActiveJoint() {
 		return selectedJoint;
+	}
+
+	public void moveSelectedJoint(int[] direction,float[] referencePoint,float[] eye) {
+		double[] joint = posture.getJointMap().get(selectedJoint);
+		float[] normalER = {referencePoint[0]-eye[0],referencePoint[1]-eye[1],
+				referencePoint[2]-eye[2]};
+
+		//Y vector
+		float[] vecY = {0,1,0};
+
+		//Get vector X clipping win
+		float[] vecXClipUnit = MathUtils.getCrossProduct(normalER,vecY);
+		vecXClipUnit = MathUtils.divideVectorWithConstant(vecXClipUnit, MathUtils.getVectorAbsolute(vecXClipUnit));
+		//Get vector Y clipping win
+		float[] vecYClipUnit = MathUtils.getCrossProduct(vecXClipUnit,normalER);
+		vecYClipUnit = MathUtils.divideVectorWithConstant(vecYClipUnit, MathUtils.getVectorAbsolute(vecYClipUnit));
+		float slope = (float)direction[1]/direction[0];
+		joint[0] = joint[0] + vecXClipUnit[0]*direction[0]+vecYClipUnit[0]*direction[1];
+		joint[1] = joint[1] + vecXClipUnit[1]*direction[0]+vecYClipUnit[1]*direction[1];
+		joint[2] = joint[2] + vecXClipUnit[2]*direction[0]+vecYClipUnit[2]*direction[1];
 	}
 }

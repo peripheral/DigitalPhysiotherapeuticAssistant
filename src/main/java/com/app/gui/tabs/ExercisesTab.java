@@ -56,7 +56,9 @@ public class ExercisesTab extends JPanel {
 		//list.setFixedCellWidth(500);
 		list.setVisibleRowCount(-1);
 		list.setFont(new Font("Tahoma", Font.BOLD, 24));
-		DefaultListCellRenderer renderer =  (DefaultListCellRenderer)list.getCellRenderer();  
+		ExerciseListCellRenderer cellRenderer = new ExerciseListCellRenderer();
+		list.setCellRenderer(cellRenderer);
+		ExerciseListCellRenderer renderer =  (ExerciseListCellRenderer) list.getCellRenderer();  
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		JScrollPane listScroller = new JScrollPane(list);
 		listScroller.setBackground(Color.YELLOW);
@@ -64,15 +66,15 @@ public class ExercisesTab extends JPanel {
 		add(listScroller,BorderLayout.CENTER);		
 	}
 	
-	class ExerciseCellRenderer extends JPanel implements ListCellRenderer<Exercise>{
-
+	class ExerciseListCellRenderer extends DefaultListCellRenderer {
+	
 		@Override
-		public Component getListCellRendererComponent(JList<? extends Exercise> list, Exercise value, int index,
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index,
 				boolean isSelected, boolean cellHasFocus) {
-			setLayout(new BorderLayout());
-			add(new JLabel(value.getName()),BorderLayout.CENTER);
-			add(new JLabel(">>"),BorderLayout.EAST);
-			return this;
+		//	Container c = (Container) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			JLabel c = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			c.setText(((Entity)value).getName()+">>");
+			return c;
 		}
 		
 	}

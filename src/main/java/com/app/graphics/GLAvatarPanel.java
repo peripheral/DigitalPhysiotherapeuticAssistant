@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -25,18 +26,20 @@ import com.app.gui.view.PhysicianView;
 import com.jogamp.opengl.util.FPSAnimator;
 
 public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListener,
-									MouseWheelListener{
-	//private PoseCanvas canvas = new PoseCanvas();
-
+									MouseWheelListener,MouseListener,MouseMotionListener{
 	private GLCanvas canvas;
 	private JPanel parent = null;
+	private int height = 700;
+	private int width = 0;
 	/*
 	 * Contains Canvases with poses
 	 */
-	//private Scene scene = new Scene();
 	private PostureRenderer postureRenderer = new PostureRenderer();
 	private double Ry= 90,Rx=0;
-	int Dist=2000;
+	private float[] referencePoint = {0.0f,1000f,0.0f};
+	private float fovy = 57; //Field of view
+	private float aspect,zNear = 1000,zFar = 3000,widthFactor = 0.8f;
+	private int dist=2000;
 	private GLJPanel self;
 
 	public GLAvatarPanel(JPanel parent){
@@ -89,12 +92,13 @@ public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListen
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent m) {
-		Dist+=m.getWheelRotation();
+		dist+=m.getWheelRotation();
 
 	}
 
 	private int rotationStepX = 2;
 	private int rotationStepY = 2;
+
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
@@ -158,7 +162,7 @@ public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListen
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -172,16 +176,21 @@ public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListen
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
+		aspect = (width*widthFactor)/height;
+		this.height = height;
+		this.width = width;
 		GL2 gl = drawable.getGL().getGL2(); 		
 		gl.glViewport(0, 0, width, height);
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
-		final GLU glu = new GLU();
-		//glu.gluOrtho2D(0.0, 450.0, 0.0, 375.0);	
-		glu.gluPerspective(57,(width*1.0f)/height,1,1000);
-		float[] v= newEyePoint(Dist);
-		glu.gluLookAt(v[0],v[1],v[2],0.0f,200f,0.0f,0.0f,1.0f,0.0f);
-		//glu.gluOrtho2D(0.0, 20.0, 0.0, 40.0);
+		final GLU glu = new GLU();	
+		glu.gluPerspective(fovy,aspect,zNear,zFar);
+		float[] v= newEyePoint(dist);
+		glu.gluLookAt(v[0],v[1],v[2],referencePoint[0],referencePoint[1],referencePoint[2],0.0f,1.0f,0.0f);
+		gl.glEnable(GL2.GL_CULL_VERTEX_EYE_POSITION_EXT);
+		gl.glEnable(GL.GL_DEPTH_TEST);
+		gl.glDepthFunc(GL.GL_LESS);
+		gl.glClearColor(1,1, 1, 1);
 	}
 
 	@Override
@@ -192,23 +201,19 @@ public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListen
 		if(parent != null){
 			parent.repaint();
 		}
-		int width = getWidth();
-		int height = getHeight();
-		gl.glViewport(0, 0, width,height);					// size of the window
-		gl.glMatrixMode(GL2.GL_PROJECTION);
+	//	gl.glViewport(0, 0, width,height);					// size of the window
+	//	gl.glMatrixMode(GL2.GL_PROJECTION);
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
 
-		glu.gluPerspective(57,(width*0.8f)/height,1,3000);
-		//45 = field of view ,width/height = aspect ratio , 1 = near clipping plane 20 = far clipping plane 
-		//http://pyopengl.sourceforge.net/documentation/ref/glu/perspective.html
-		gl.glEnable(GL2.GL_CULL_VERTEX_EYE_POSITION_EXT);
-		gl.glEnable(GL.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL.GL_LESS);
+		glu.gluPerspective(fovy,aspect,zNear,zFar);
+		
 
-		float[] eyePoint = newEyePoint(Dist);
-		glu.gluLookAt(eyePoint[0],eyePoint[1],eyePoint[2],0.0f,1000f,0.0f,0.0f,1.0f,0.0f);
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		gl.glClearColor(1,1, 1, 1);
+		float[] eyePoint = newEyePoint(dist);
+		glu.gluLookAt(eyePoint[0],eyePoint[1],eyePoint[2],referencePoint[0],referencePoint[1]
+				,referencePoint[2],0.0f,1.0f,0.0f);
+
+		
 		/* X axel blue */
 		gl.glColor3d(0, 0, 1);
 		gl.glBegin(GL2.GL_LINE_STRIP);
@@ -230,13 +235,6 @@ public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListen
 		gl.glVertex3d(0, 0, 100);
 		gl.glEnd();
 
-		gl.glColor3d(0.8,0.8,0.8);
-		gl.glBegin(GL.GL_TRIANGLE_FAN);
-		gl.glVertex3d(-1,-1,0);
-		gl.glVertex3d(-1,1,0);
-		gl.glVertex3d(1,1,0);
-		gl.glVertex3d(1,-1,0);
-		gl.glEnd();
 		postureRenderer.drawPosture(drawable);
 	}
 
@@ -263,5 +261,69 @@ public class GLAvatarPanel extends GLJPanel implements GLEventListener,KeyListen
 
 	public void setRotationAngleY(int i) {
 		Ry = i;
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		String jointName = postureRenderer.selectJointWithMouse(e.getX(),e.getY(),
+				newEyePoint(dist),fovy,referencePoint,aspect,height,width);
+		double[] coords = postureRenderer.getPosture().getJointMap().get(jointName);
+		((PhysicianView)parent).setSelectedJoint(coords,jointName);
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private int previousX = 0,previousY = 0;
+	private boolean notSet = true;
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		int[] direction = new int[2];
+		if(notSet) {
+			previousX = e.getX();
+			previousY = e.getY();
+			notSet = false;
+		}else {
+			direction[0] = e.getX() -	previousX  ;
+			direction[1] = e.getY() - previousY;
+			previousX = e.getX();
+			previousY = e.getY();
+			postureRenderer.moveSelectedJoint(direction,referencePoint,newEyePoint(dist));
+		}
+		((PhysicianView)parent).updateTextFields(postureRenderer.getPosture().getJointMap()
+				.get(postureRenderer.getActiveJoint()));
+	}
+
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

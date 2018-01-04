@@ -30,13 +30,13 @@ public class Posture extends Entity {
 	private double shoulder_left[] = null;
 	private double shoulder_right[] = null;
 	private double spine_shoulder[] = null;
-	private double spine_mid[] = null;
 	private double elbow_left[] = null;
 	private double elbow_right[] = null;
 	private double hand_left[] = null;
 	private double hand_right[] = null;
 	private double wrist_left[] = null;
 	private double wrist_right[] = null;
+	private double spine_mid[] = null;
 	private double spine_base[] = null;
 	private double hip_left[] = null;
 	private double hip_right[] = null;
@@ -73,7 +73,6 @@ public class Posture extends Entity {
 		jointMap.put(BodyModelImpl.JOINT_TAG.SPINE_SHOULDER.name(),spine_shoulder);
 		jointMap.put(BodyModelImpl.JOINT_TAG.SHOULDER_LEFT.name(),shoulder_left);
 		jointMap.put(BodyModelImpl.JOINT_TAG.SHOULDER_RIGHT.name(),shoulder_right);
-		jointMap.put(BodyModelImpl.JOINT_TAG.SPINE_MID.name(),spine_mid);
 		jointMap.put(BodyModelImpl.JOINT_TAG.ELBOW_RIGHT.name(),elbow_right);
 		jointMap.put(BodyModelImpl.JOINT_TAG.ELBOW_LEFT.name(),elbow_left);
 		jointMap.put(BodyModelImpl.JOINT_TAG.WRIST_RIGHT.name(),wrist_right);
@@ -82,6 +81,7 @@ public class Posture extends Entity {
 		jointMap.put(BodyModelImpl.JOINT_TAG.HAND_LEFT.name(),hand_left);
 		jointMap.put(BodyModelImpl.JOINT_TAG.THUMB_RIGHT.name(),thumb_right);
 		jointMap.put(BodyModelImpl.JOINT_TAG.THUMB_LEFT.name(),thumb_left);
+		jointMap.put(BodyModelImpl.JOINT_TAG.SPINE_MID.name(),spine_mid);
 		jointMap.put(BodyModelImpl.JOINT_TAG.SPINE_BASE.name(),spine_base);
 		jointMap.put(BodyModelImpl.JOINT_TAG.HIP_LEFT.name(),hip_left);
 		jointMap.put(BodyModelImpl.JOINT_TAG.HIP_RIGHT.name(),hip_right);		
@@ -107,10 +107,13 @@ public class Posture extends Entity {
 		 *  is in the last 9 section*/
 		head = new double[3];
 		head[0] = X_OFFSET + BodyModelImpl.CENTER;
-		head[1] = Y_OFFSET + BodyModelImpl.HH*8 - BodyModelImpl.HH/2;
+		head[1] = Y_OFFSET + BodyModelImpl.HH*8 - BodyModelImpl.HH/8;
 		head[2] = Z_OFFSET + 0;
 		
 		neck = new double[3];
+		neck[0] = X_OFFSET + BodyModelImpl.CENTER;
+		neck[1] = Y_OFFSET + BodyModelImpl.HH*8 - BodyModelImpl.HH*3/4 ;
+		neck[2] = Z_OFFSET + 0;
 
 		spine_shoulder = new double[3];
 		spine_shoulder[0] = X_OFFSET + BodyModelImpl.CENTER;
@@ -129,7 +132,6 @@ public class Posture extends Entity {
 		shoulder_right[1] = Y_OFFSET + BodyModelImpl.HH*7 - BodyModelImpl.HH/3;
 		shoulder_right[2] = Z_OFFSET + 0;
 
-		spine_mid = new double[3];
 		
 		elbow_right = new double [3];
 		elbow_right[0] = X_OFFSET + BodyModelImpl.CENTER - ( BodyModelImpl.HW +BodyModelImpl.HW/5 );
@@ -149,10 +151,10 @@ public class Posture extends Entity {
 		hip_left[2] = Z_OFFSET + 0;
 
 
-		spine_base = new double [3];
-		spine_base[0] = X_OFFSET + BodyModelImpl.CENTER;
-		spine_base[1] = Y_OFFSET + BodyModelImpl.HH*5.5;
-		spine_base[2] = Z_OFFSET + 0;
+		spine_mid = new double [3];
+		spine_mid[0] = X_OFFSET + BodyModelImpl.CENTER;
+		spine_mid[1] = Y_OFFSET + BodyModelImpl.HH*5 + BodyModelImpl.HH/2;
+		spine_mid[2] = Z_OFFSET + 0;
 
 		spine_base = new double [3];
 		spine_base[0] = X_OFFSET + BodyModelImpl.CENTER;
@@ -331,12 +333,12 @@ public class Posture extends Entity {
 		this.spine_base = spine;
 	}
 
-	public double[] getHip_center() {
-		return spine_base;
+	public double[] getSpineMid() {
+		return spine_mid;
 	}
 
-	public void setHip_center(double[] hip_center) {
-		this.spine_base = hip_center;
+	public void setSpineMid(double[] spine_mid) {
+		this.spine_mid = spine_mid;
 	}
 
 	public double[] getHip_left() {
@@ -640,5 +642,13 @@ public class Posture extends Entity {
 		posture.setDuration(duration);
 		posture.setLatestProgress(latestProgress);
 		posture.setHighestProgress(highestProgress);
+	}
+
+	public double[] getNeck() {
+		return neck;
+	}
+	
+	public void setNeck(double[] neck) {
+		this.neck = neck;
 	}
 }

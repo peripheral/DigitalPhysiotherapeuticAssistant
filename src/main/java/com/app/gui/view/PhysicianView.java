@@ -85,6 +85,8 @@ public class PhysicianView extends JPanel implements MouseListener {
 		posturePanel.addGLEventListener((GLAvatarPanel)posturePanel);
 		posturePanel.addKeyListener((GLAvatarPanel)posturePanel);
 		posturePanel.addMouseWheelListener((GLAvatarPanel)posturePanel);
+		posturePanel.addMouseListener((GLAvatarPanel)posturePanel);
+		posturePanel.addMouseMotionListener((GLAvatarPanel)posturePanel);
 		((GLAvatarPanel)posturePanel).setPosture(postureList.getActivePosture());
 		setUpControls();	
 		add(posturePanel,BorderLayout.CENTER);
@@ -544,5 +546,11 @@ public class PhysicianView extends JPanel implements MouseListener {
 		yValue.setValue(coords[1]);
 		zValue.setValue(coords[2]);
 		jointLabel.setText(jointName);
+	}
+
+	public void updateTextFields(double[] coords) {
+		xValue.setValue(coords[0]);	
+		yValue.setValue(coords[1]);
+		zValue.setValue(coords[2]);		
 	}
 }
